@@ -9,10 +9,19 @@ router.get('/', function(req, res, next) {
     })
 });
 
-router.post('/login', function(req,res,next){
+router.post('/login', async function(req,res,next){
   const {usuario, senha} = req.body;
-  if(usuario === 'tiaogaviao@gmail.com' && senha === '123'){
-    res.send("Deu certo! Faz de conta que você está no dashboard");
+
+  console.log('Estou no index.js - POST /login');
+  console.log('Dados recebidos do Formulario', usuario,senha)
+
+  const user = await global.banco.getUsuario(usuario, senha);
+
+  console.log('Dados recebido do BD:', user);
+
+  if(user && user.length > 0){
+    global.usuario = user;
+    res.redirect('/dashboard');
   }
   else{
     res.render('index', 
@@ -23,8 +32,8 @@ router.post('/login', function(req,res,next){
   }
 });
 
-router.get('/listagem', function (req,res, next){
-  res.send('Aqui vai aparece a lista de livros!')
+router.get('/dashboard', function (req,res, next){
+  res.render('dashboard')
 });
 
 module.exports = router;
